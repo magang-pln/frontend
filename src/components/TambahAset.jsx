@@ -7,7 +7,7 @@ Modal.setAppElement('#root');
 
 function TambahAset() {
   const [formData, setFormData] = useState({
-    unitInduk: '',
+    unitInduk: 'UID SULUTTENGGO',
     namaAset: '',
     nomorSAP: '',
     luas: '',
@@ -223,6 +223,7 @@ function TambahAset() {
                       placeholder={`Masukkan ${key.replace(/([A-Z])/g, ' $1')}`}
                     />
                   </div>
+                  
                 );
               }
             })}
@@ -246,84 +247,108 @@ function TambahAset() {
         </section>
 
         {/* Modal untuk mengisi alamat */}
-        <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} className="modal">
-          <h2 className="text-xl font-semibold mb-4">Isi Alamat</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Provinsi</label>
-              <select
-                name="provinsi"
-                value={formData.alamat.provinsi}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Pilih Provinsi</option>
-                <option value="Sulawesi Utara">Sulawesi Utara</option>
-                <option value="Sulawesi Tengah">Sulawesi Tengah</option>
-                <option value="Gorontalo">Gorontalo</option>
-              </select>
-            </div>
+<Modal
+  isOpen={isModalOpen}
+  onRequestClose={() => setIsModalOpen(false)}
+  className="fixed inset-0 flex items-center justify-center z-50" // Menempatkan modal di tengah
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50" // Overlay transparan
+>
+  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md"> {/* Mengatur ukuran modal */}
+    <h2 className="text-xl font-semibold mb-4">Isi Alamat</h2>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Provinsi</label>
+        <select
+          name="provinsi"
+          value={formData.alamat.provinsi}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Provinsi</option>
+          <option value="Sulawesi Utara">Sulawesi Utara</option>
+          <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+          <option value="Gorontalo">Gorontalo</option>
+        </select>
+      </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Kota/Kabupaten</label>
-              <select
-                name="kotaKabupaten"
-                value={formData.alamat.kotaKabupaten}
-                onChange={handleCityChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Pilih Kota/Kabupaten</option>
-                {formData.alamat.provinsi === 'Sulawesi Utara' && (
-                  <>
-                    <option value="Kota Manado">Kota Manado</option>
-                    <option value="Kota Bitung">Kota Bitung</option>
-                    <option value="Kota Kotamobagu">Kota Kotamobagu</option>
-                  </>
-                )}
-                {formData.alamat.provinsi === 'Sulawesi Tengah' && (
-                  <option value="Kota Palu">Kota Palu</option>
-                )}
-                {formData.alamat.provinsi === 'Gorontalo' && (
-                  <option value="Kota Gorontalo">Kota Gorontalo</option>
-                )}
-              </select>
-            </div>
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kota/Kabupaten</label>
+        <select
+          name="kotaKabupaten"
+          value={formData.alamat.kotaKabupaten}
+          onChange={handleCityChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kota/Kabupaten</option>
+          {formData.alamat.provinsi === 'Sulawesi Utara' && (
+            <>
+              <option value="Kota Manado">Kota Manado</option>
+              <option value="Kota Bitung">Kota Bitung</option>
+              <option value="Kota Kotamobagu">Kota Kotamobagu</option>
+            </>
+          )}
+          {formData.alamat.provinsi === 'Sulawesi Tengah' && (
+            <option value="Kota Palu">Kota Palu</option>
+          )}
+          {formData.alamat.provinsi === 'Gorontalo' && (
+            <option value="Kota Gorontalo">Kota Gorontalo</option>
+          )}
+        </select>
+      </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Kecamatan</label>
-              <select
-                name="kecamatan"
-                value={formData.alamat.kecamatan}
-                onChange={handleKecamatanChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Pilih Kecamatan</option>
-                {kecamatanOptions.map((kecamatan) => (
-                  <option key={kecamatan} value={kecamatan}>{kecamatan}</option>
-                ))}
-              </select>
-            </div>
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kecamatan</label>
+        <select
+          name="kecamatan"
+          value={formData.alamat.kecamatan}
+          onChange={handleKecamatanChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kecamatan</option>
+          {kecamatanOptions.map((kecamatan) => (
+            <option key={kecamatan} value={kecamatan}>{kecamatan}</option>
+          ))}
+        </select>
+      </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Kelurahan</label>
-              <select
-                name="kelurahan"
-                value={formData.alamat.kelurahan}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Pilih Kelurahan</option>
-                {kelurahanOptions.map((kelurahan) => (
-                  <option key={kelurahan} value={kelurahan}>{kelurahan}</option>
-                ))}
-              </select>
-            </div>
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kelurahan</label>
+        <select
+          name="kelurahan"
+          value={formData.alamat.kelurahan}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kelurahan</option>
+          {kelurahanOptions.map((kelurahan) => (
+            <option key={kelurahan} value={kelurahan}>{kelurahan}</option>
+          ))}
+        </select>
+      </div>
 
-            <button onClick={handleAddressChange} className="mt-4 w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Simpan Alamat
-            </button>
-          </div>
-        </Modal>
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Jalan</label>
+        <input
+          type="text"
+          name="jalan"
+          value={formData.alamat.jalan}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Masukkan Nama Jalan"
+        />
+      </div>
+
+      <button
+        onClick={handleAddressChange}
+        className="mt-4 w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+      >
+        Simpan Alamat
+      </button>
+    </div>
+  </div>
+</Modal>
+
+
       </div>
     </div>
   );
