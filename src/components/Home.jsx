@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LogoPLN from "../images/pln-logo.png";
 import { UserIcon, LockClosedIcon } from "@heroicons/react/outline";
 import { useNavigate } from 'react-router-dom';
-import BackgroundImage from "../images/background.jpg"; // Import the background image
+import BackgroundImage from "../images/background.jpg";
 
 const Home = () => {
   const [username, setUsername] = useState("");

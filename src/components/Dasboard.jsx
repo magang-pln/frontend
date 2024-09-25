@@ -1,28 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from './SidebarNew';
-import markerIcon from '../images/MAP-ICON.png'; // Sesuaikan dengan path ikon
+import React, { useEffect, useRef, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "./SidebarNew";
+import markerIcon from "../images/MAP-ICON.png";
 
 function Dashboard() {
   const navigate = useNavigate();
-  const mapRef = useRef(null); // Gunakan ref untuk peta
-  const [searchTerm, setSearchTerm] = useState('');
+  const mapRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const assets = [
-    { lat: -1.474830, lng: 124.842079, name: 'Aset 1', location: 'Lokasi 1', area: '100 m²', acquisitionCost: 'Rp 500.000.000' },
-    { lat: -1.500000, lng: 124.850000, name: 'Aset 2', location: 'Lokasi 2', area: '200 m²', acquisitionCost: 'Rp 750.000.000' },
-    { lat: -1.520000, lng: 124.860000, name: 'Aset 3', location: 'Lokasi 3', area: '150 m²', acquisitionCost: 'Rp 600.000.000' },
+    {
+      lat: -1.47483,
+      lng: 124.842079,
+      name: "Aset 1",
+      location: "Lokasi 1",
+      area: "100 m²",
+      acquisitionCost: "Rp 500.000.000",
+    },
+    {
+      lat: -1.5,
+      lng: 124.85,
+      name: "Aset 2",
+      location: "Lokasi 2",
+      area: "200 m²",
+      acquisitionCost: "Rp 750.000.000",
+    },
+    {
+      lat: -1.52,
+      lng: 124.86,
+      name: "Aset 3",
+      location: "Lokasi 3",
+      area: "150 m²",
+      acquisitionCost: "Rp 600.000.000",
+    },
   ];
 
   useEffect(() => {
-    if (mapRef.current) return; // Jika peta sudah ada, keluar dari efek
+    if (mapRef.current) return;
 
-    mapRef.current = L.map('map').setView([-1.474830, 124.842079], 10);
+    mapRef.current = L.map("map").setView([-1.47483, 124.842079], 10);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapRef.current);
 
     const customIcon = L.icon({
@@ -32,10 +54,10 @@ function Dashboard() {
       popupAnchor: [1, -34],
     });
 
-    assets.forEach(asset => {
-      L.marker([asset.lat, asset.lng], { icon: customIcon })
-        .addTo(mapRef.current)
-        .bindPopup(`
+    assets.forEach((asset) => {
+      L.marker([asset.lat, asset.lng], { icon: customIcon }).addTo(
+        mapRef.current
+      ).bindPopup(`
           <div>
             <b>${asset.name}</b><br>
             <table style="width: 100%; border-collapse: collapse;">
@@ -62,23 +84,29 @@ function Dashboard() {
   }, []);
 
   const handleSearch = () => {
-    const foundAsset = assets.find(asset => asset.name.toLowerCase() === searchTerm.toLowerCase());
+    const foundAsset = assets.find(
+      (asset) => asset.name.toLowerCase() === searchTerm.toLowerCase()
+    );
     if (foundAsset && mapRef.current) {
       mapRef.current.setView([foundAsset.lat, foundAsset.lng], 15);
     } else {
-      alert('Aset tidak ditemukan!');
+      alert("Aset tidak ditemukan!");
     }
   };
 
   const handleLogout = () => {
-    navigate('/'); // Arahkan ke halaman login
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
     <div className="flex h-screen">
       <Sidebar />
 
-      <main className="flex-1 p-6 bg-gray-100 overflow-y-auto" style={{ marginLeft: '250px' }}>
+      <main
+        className="flex-1 p-6 bg-gray-100 overflow-y-auto"
+        style={{ marginLeft: "250px" }}
+      >
         <header className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <div className="flex items-center">
@@ -122,7 +150,15 @@ function Dashboard() {
 
         {/* Map Section */}
         <section className="relative mb-8">
-          <div id="map" style={{ height: '650px', width: '100%', border: '1px solid #ccc', backgroundColor: 'lightgray' }}></div>
+          <div
+            id="map"
+            style={{
+              height: "650px",
+              width: "100%",
+              border: "1px solid #ccc",
+              backgroundColor: "lightgray",
+            }}
+          ></div>
         </section>
       </main>
     </div>
