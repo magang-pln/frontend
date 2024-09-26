@@ -161,7 +161,9 @@ function DaftarAset() {
                 <th className="border p-2 bg-blue-500 text-white">
                   Sumber Perolehan
                 </th>
-                <th className="border p-2 bg-blue-500 text-white">Alamat</th>
+                <th className="border p-2 min-w-64 max-w-full bg-blue-500 text-white">
+                  Alamat
+                </th>
                 <th className="border p-2 bg-blue-500 text-white">
                   Nomor Sertipikat
                 </th>
@@ -206,7 +208,7 @@ function DaftarAset() {
                     <td className="border p-2">{aset.tahun_perolehan}</td>
                     <td className="border p-2">{aset.nilai_saat_ini}</td>
                     <td className="border p-2">{aset.sumber_perolehan}</td>
-                    <td className="border p-2">{formatAddress(aset)}</td>
+                    <td className="border p-2 w-64">{formatAddress(aset)}</td>
                     <td className="border p-2">{aset.nomor_sertipikat}</td>
                     <td className="border p-2">
                       {formatDate(aset.tanggal_berlaku_sertipikat)}
