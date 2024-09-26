@@ -30,7 +30,7 @@
     "react-toastify": "^10.0.5",
     "slugify": "^1.6.6",
     "string-fn": "^3.3.2",
-    "sweetalert2": "^11.12.0",
+    "sweetalert2": "^11.14.1",
     "tailwind-datepicker-react": "^1.4.3",
     "validator": "^13.12.0",
     "web-vitals": "^2.1.4"
@@ -61,5 +61,6 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.3"
-  }
+  },
+  "proxy": "http://backend-production-a671.up.railway.app"
 }

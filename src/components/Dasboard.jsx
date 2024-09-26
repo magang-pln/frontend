@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./SidebarNew";
 import markerIcon from "../images/MAP-ICON.png";
+import { AssetContext } from "./AssetContext";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { assetCount } = useContext(AssetContext);
   const mapRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -144,7 +146,7 @@ function Dashboard() {
           </div>
           <div className="p-4 bg-white rounded shadow">
             <h2 className="text-xl">Aset Dalam Pemeliharaan</h2>
-            <p className="text-3xl">10</p>
+            <p className="text-3xl">{assetCount}</p>
           </div>
         </section>
 

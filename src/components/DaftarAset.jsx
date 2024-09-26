@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./SidebarNew";
 import "font-awesome/css/font-awesome.min.css";
+import Swal from "sweetalert2";
+import { AssetContext } from "./AssetContext";
 
 function DaftarAset() {
+  const { setAssetCount } = useContext(AssetContext);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [asetList, setAsetList] = useState([]);
@@ -15,10 +18,17 @@ function DaftarAset() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Data fetched from API:", data);
-        setAsetList(data.data.findAssets);
+        const assets = data.data.findAssets;
+        setAsetList(assets);
+        const yellowCount = assets.filter(
+          (asset) =>
+            !asset.nomor_sertipikat || asset.nomor_sertipikat.trim() === ""
+        ).length;
+        console.log("Yellow Count:", yellowCount);
+        setAssetCount(yellowCount);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  }, [setAssetCount]);
 
   const filteredAsetList = Array.isArray(asetList)
     ? asetList.filter((aset) => {
@@ -62,11 +72,52 @@ function DaftarAset() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus aset ini?")) {
-      const updatedAsetList = asetList.filter((aset) => aset.id !== id);
-      setAsetList(updatedAsetList);
-      console.log(`Aset dengan ID ${id} telah dihapus.`);
-    }
+    const token = localStorage.getItem("token");
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Anda tidak dapat mengembalikan ini!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, hapus!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log("Deleting asset with ID:", id);
+        fetch(
+          `http://backend-production-a671.up.railway.app/api/v1/assets/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error(
+                `Error: ${response.status} - ${response.statusText}`
+              );
+            }
+          })
+          .then((data) => {
+            console.log(data.message);
+            const updatedAsetList = asetList.filter((aset) => aset.id !== id);
+            setAsetList(updatedAsetList);
+            Swal.fire("Dihapus!", "Aset telah dihapus.", "success");
+          })
+          .catch((error) => {
+            console.error("Error deleting asset:", error);
+            Swal.fire(
+              "Error",
+              `Gagal menghapus aset. ${error.message}`,
+              "error"
+            );
+          });
+      }
+    });
   };
 
   const handlePageChange = (pageNumber) => {
@@ -144,7 +195,10 @@ function DaftarAset() {
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((aset) => (
-                  <tr key={aset.id}>
+                  <tr
+                    key={aset.id}
+                    className={!aset.nomor_sertipikat ? "bg-yellow-300" : ""}
+                  >
                     <td className="border p-2">{aset.unit_induk}</td>
                     <td className="border p-2">{aset.nama_aset}</td>
                     <td className="border p-2">{aset.unit}</td>

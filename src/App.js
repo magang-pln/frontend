@@ -18,7 +18,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/daftar-aset" element={<DaftarAset />} />
           <Route path="/tambah-aset" element={<TambahAset />} />
-          <Route path="/edit-aset" element={<EditAset />} />
+          <Route path="/edit-aset/:id" element={<EditAset />} />
         </Routes>
       </div>
     </Router>
