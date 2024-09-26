@@ -14,7 +14,7 @@ function DaftarAset() {
   const itemsPerPage = 25;
 
   useEffect(() => {
-    fetch("http://backend-production-a671.up.railway.app/api/v1/assets/")
+    fetch("https://backend-production-a671.up.railway.app/api/v1/assets/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Data fetched from API:", data);
@@ -33,12 +33,10 @@ function DaftarAset() {
   const filteredAsetList = Array.isArray(asetList)
     ? asetList.filter((aset) => {
         const namaAset = aset.nama_aset?.toLowerCase() || "";
-        const alamatAset = aset.alamat?.toLowerCase() || "";
         const nomorSap = aset.nomor_SAP || "";
 
         return (
           namaAset.includes(searchTerm.toLowerCase()) ||
-          alamatAset.includes(searchTerm.toLowerCase()) ||
           nomorSap.includes(searchTerm)
         );
       })
@@ -85,7 +83,7 @@ function DaftarAset() {
       if (result.isConfirmed) {
         console.log("Deleting asset with ID:", id);
         fetch(
-          `http://backend-production-a671.up.railway.app/api/v1/assets/${id}`,
+          `https://backend-production-a671.up.railway.app/api/v1/assets/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -135,7 +133,7 @@ function DaftarAset() {
             <i className="fa fa-search absolute left-3 top-2 text-gray-400"></i>
             <input
               type="text"
-              placeholder="Cari Aset (nama, lokasi, atau nomor SAP)..."
+              placeholder="Cari Aset (nama atau nomor SAP)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full p-2 pl-10 border border-gray-300 rounded"
@@ -222,11 +220,9 @@ function DaftarAset() {
                       {aset.kantah_BPN_sertifiksai}
                     </td>
                     <td className="border p-2 text-center">
-                      {aset.fileKronologis ? (
+                      {aset.kronologis ? (
                         <a
-                          href={aset.fileKronologis}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`https://backend-production-a671.up.railway.app/api/v1/assets/download/${aset.kronologis}`}
                           className="text-blue-500"
                         >
                           <i className="fa fa-file"></i>
@@ -236,11 +232,9 @@ function DaftarAset() {
                       )}
                     </td>
                     <td className="border p-2 text-center">
-                      {aset.fileSertifikat ? (
+                      {aset.sertipikat ? (
                         <a
-                          href={aset.fileSertifikat}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`https://backend-production-a671.up.railway.app/api/v1/assets/download/${aset.sertipikat}`}
                           className="text-blue-500"
                         >
                           <i className="fa fa-file"></i>

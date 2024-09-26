@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios'; // Import axios
-import Sidebar from './SidebarNew';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios"; // Import axios
+import Sidebar from "./SidebarNew";
 
 function EditAset() {
   const { id } = useParams();
@@ -29,30 +29,33 @@ function EditAset() {
     // Memanggil API untuk mendapatkan data aset berdasarkan ID
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://backend-production-a671.up.railway.app/api/v1/assets/${id}`);
+        const response = await axios.get(
+          `http://backend-production-a671.up.railway.app/api/v1/assets/${id}`
+        );
         const fetchedData = response.data;
 
         setFormData({
-          unitInduk: fetchedData.unitInduk || '',
-          namaAset: fetchedData.namaAset || '',
-          nomorSAP: fetchedData.nomorSAP || '',
-          luas: fetchedData.luas || '',
-          hargaPerolehan: fetchedData.hargaPerolehan || '',
-          nilaiSaatIni: fetchedData.nilaiSaatIni || '',
-          tanggalPenilaian: fetchedData.tanggalPenilaian || '',
-          sumberPerolehan: fetchedData.sumberPerolehan || '',
-          alamat: fetchedData.alamat || '',
-          nomorSertifikat: fetchedData.nomorSertifikat || '',
-          tanggalBerlakuSertifikat: fetchedData.tanggalBerlakuSertifikat || '',
-          tanggalBerakhirSertifikat: fetchedData.tanggalBerakhirSertifikat || '',
-          penguasaanTanah: fetchedData.penguasaanTanah || '',
-          permasalahanAset: fetchedData.permasalahanAset || '',
-          kantahBPN: fetchedData.kantahBPN || '',
-          fileKronologis: fetchedData.fileKronologis || '',
-          fileSertifikat: fetchedData.fileSertifikat || '',
+          unitInduk: fetchedData.unitInduk || "",
+          namaAset: fetchedData.namaAset || "",
+          nomorSAP: fetchedData.nomorSAP || "",
+          luas: fetchedData.luas || "",
+          hargaPerolehan: fetchedData.hargaPerolehan || "",
+          nilaiSaatIni: fetchedData.nilaiSaatIni || "",
+          tanggalPenilaian: fetchedData.tanggalPenilaian || "",
+          sumberPerolehan: fetchedData.sumberPerolehan || "",
+          alamat: fetchedData.alamat || "",
+          nomorSertifikat: fetchedData.nomorSertifikat || "",
+          tanggalBerlakuSertifikat: fetchedData.tanggalBerlakuSertifikat || "",
+          tanggalBerakhirSertifikat:
+            fetchedData.tanggalBerakhirSertifikat || "",
+          penguasaanTanah: fetchedData.penguasaanTanah || "",
+          permasalahanAset: fetchedData.permasalahanAset || "",
+          kantahBPN: fetchedData.kantahBPN || "",
+          fileKronologis: fetchedData.fileKronologis || "",
+          fileSertifikat: fetchedData.fileSertifikat || "",
         });
       } catch (error) {
-        console.error('Error fetching data from API:', error);
+        console.error("Error fetching data from API:", error);
       }
     };
 
@@ -69,7 +72,7 @@ function EditAset() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Data yang dikirim:', formData);
+    console.log("Data yang dikirim:", formData);
 
     // Reset formData ke nilai awal setelah disimpan
     setFormData({
