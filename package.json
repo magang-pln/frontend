@@ -66,6 +66,5 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.3"
-  },
-  "proxy": "http://backend-production-a671.up.railway.app"
+  }
 }
