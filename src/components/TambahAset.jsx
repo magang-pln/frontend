@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Untuk link navigasi
 import Sidebar from './SidebarNew';
 import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
 
 Modal.setAppElement('#root');
 
 function TambahAset() {
   const [formData, setFormData] = useState({
-    unitInduk: '',
+    unitInduk: 'UID SULUTTENGGO',
     namaAset: '',
     nomorSAP: '',
     luas: '',
@@ -28,20 +31,49 @@ function TambahAset() {
     penguasaanTanah: '',
     permasalahanAset: '',
     kantahBPN: '',
-    fileKronologis: null, // Menyimpan file yang diupload
-    fileSertifikat: null, // Menyimpan file yang diupload
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [kecamatanOptions, setKecamatanOptions] = useState([]);
   const [kelurahanOptions, setKelurahanOptions] = useState([]);
+  const [assets, setAssets] = useState([]); // State untuk menyimpan data aset
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await fetch('http://backend-production-a671.up.railway.app/api/v1/assets/');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setAssets(data); // Simpan data aset ke state
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
+    };
+
+    fetchAssets(); // Panggil fungsi fetch saat komponen dimuat
+  }, []); // Array kosong sebagai dependency untuk memanggil sekali saat mount
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    // Cek jika input berasal dari bagian 'alamat'
+    if (name === 'provinsi' || name === 'kotaKabupaten' || name === 'kecamatan' || name === 'kelurahan' || name === 'jalan') {
+      setFormData({
+        ...formData,
+        alamat: {
+          ...formData.alamat,
+          [name]: value, // Update bagian dari alamat yang sedang diubah
+        },
+      });
+    } else {
+      // Untuk input lainnya, update secara biasa
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleFileChange = (e, field) => {
@@ -142,7 +174,7 @@ function TambahAset() {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
-      <div className="flex-1 p-6 bg-white shadow-lg rounded-lg ml-64"> {/* Menambahkan ml-64 di sini */}
+      <div className="flex-1 p-6 bg-white shadow-lg rounded-lg ml-64">
         <section className="rounded-lg shadow-md p-6">
           <h2 className="text-3xl font-semibold mb-4 text-blue-600">Tambah Aset</h2>
           <form onSubmit={handleSubmit} className="space-y-4 pl-4">
@@ -153,7 +185,7 @@ function TambahAset() {
                     <label className="block text-sm font-medium mb-1 text-gray-700 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
                     <input
                       type="text"
-                      value={`${formData.alamat.jalan}, ${formData.alamat.kelurahan}, ${formData.alamat.kecamatan}, ${formData.alamat.provinsi}`}
+                      value={`${formData.alamat.jalan}, ${formData.alamat.kelurahan}, ${formData.alamat.kecamatan}, ${formData.alamat.provinsi}` }
                       readOnly
                       className="w-full p-3 border border-gray-300 rounded-md bg-gray-200"
                       placeholder="Klik untuk mengisi alamat"
@@ -184,7 +216,7 @@ function TambahAset() {
                     <div className="flex items-center">
                       <span className="mr-2 text-gray-700">Rp</span>
                       <input
-                        type="text"
+                        type="number"
                         name={key}
                         value={formData[key]}
                         onChange={handleChange}
@@ -192,49 +224,6 @@ function TambahAset() {
                         placeholder={`Masukkan ${key.replace(/([A-Z])/g, ' $1')}`}
                       />
                     </div>
-                  </div>
-                );
-              } else if (key === 'sumberPerolehan') {
-                return (
-                  <div key={key}>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
-                    <select
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Pilih Sumber Perolehan</option>
-                      <option value="Pembelian">Pembelian</option>
-                      <option value="Hibah">Hibah</option>
-                    </select>
-                  </div>
-                );
-              } else if (key === 'penguasaanTanah') {
-                return (
-                  <div key={key}>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
-                    <select
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Pilih Penguasaan Tanah</option>
-                      <option value="Dikuasai">Dikuasai</option>
-                      <option value="Tidak Dikuasai">Tidak Dikuasai</option>
-                    </select>
-                  </div>
-                );
-              } else if (key === 'fileKronologis' || key === 'fileSertifikat') {
-                return (
-                  <div key={key}>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
-                    <input
-                      type="file"
-                      onChange={(e) => handleFileChange(e, key)}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
                   </div>
                 );
               } else {
@@ -247,82 +236,154 @@ function TambahAset() {
                       value={formData[key]}
                       onChange={handleChange}
                       className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={`Masukkan ${key.replace(/([A-Z])/g, ' $1')}`}
                     />
                   </div>
+                  
                 );
               }
             })}
-            <button type="submit" className="mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">Simpan</button>
+
+{/* Input untuk meng-upload file sertifikat */}
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Upload Sertifikat</label>
+  <input
+    type="file"
+    onChange={(e) => handleFileChange(e, 'fileSertifikat')}
+    className="border border-gray-300 rounded-md p-4 w-full h-12" // Memperbesar padding dan tinggi
+  />
+</div>
+
+{/* Input untuk meng-upload file kronologis */}
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Upload Kronologis</label>
+  <input
+    type="file"
+    onChange={(e) => handleFileChange(e, 'fileKronologis')}
+    className="border border-gray-300 rounded-md p-4 w-full h-12" // Memperbesar padding dan tinggi
+  />
+</div>
+
+
+            <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              Simpan Aset
+            </button>
           </form>
         </section>
+
+        {/* Modal untuk mengisi alamat */}
+        <Modal
+  isOpen={isModalOpen}
+  onRequestClose={() => setIsModalOpen(false)}
+  className="fixed inset-0 flex items-center justify-center z-50" // Menempatkan modal di tengah
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50" // Overlay transparan
+>
+  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative"> {/* Mengatur ukuran modal dan menambahkan relative positioning */}
+    {/* Tombol X di kanan atas */}
+    <button
+      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+      onClick={() => setIsModalOpen(false)}
+    >
+      X
+    </button>
+
+    <h2 className="text-xl font-semibold mb-4">Isi Alamat</h2>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Provinsi</label>
+        <select
+          name="provinsi"
+          value={formData.alamat.provinsi}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Provinsi</option>
+          <option value="Sulawesi Utara">Sulawesi Utara</option>
+          <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+          <option value="Gorontalo">Gorontalo</option>
+        </select>
       </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onRequestClose={() => setIsModalOpen(false)} 
-        className="modal flex items-center justify-center"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kota/Kabupaten</label>
+        <select
+          name="kotaKabupaten"
+          value={formData.alamat.kotaKabupaten}
+          onChange={handleCityChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kota/Kabupaten</option>
+          {formData.alamat.provinsi === 'Sulawesi Utara' && (
+            <>
+              <option value="Kota Manado">Kota Manado</option>
+              <option value="Kota Bitung">Kota Bitung</option>
+              <option value="Kota Kotamobagu">Kota Kotamobagu</option>
+            </>
+          )}
+          {formData.alamat.provinsi === 'Sulawesi Tengah' && (
+            <option value="Kota Palu">Kota Palu</option>
+          )}
+          {formData.alamat.provinsi === 'Gorontalo' && (
+            <option value="Kota Gorontalo">Kota Gorontalo</option>
+          )}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kecamatan</label>
+        <select
+          name="kecamatan"
+          value={formData.alamat.kecamatan}
+          onChange={handleKecamatanChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kecamatan</option>
+          {kecamatanOptions.map((kecamatan) => (
+            <option key={kecamatan} value={kecamatan}>{kecamatan}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Kelurahan</label>
+        <select
+          name="kelurahan"
+          value={formData.alamat.kelurahan}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Pilih Kelurahan</option>
+          {kelurahanOptions.map((kelurahan) => (
+            <option key={kelurahan} value={kelurahan}>{kelurahan}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">Jalan</label>
+        <input
+          type="text"
+          name="jalan"
+          value={formData.alamat.jalan}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Masukkan Nama Jalan"
+        />
+      </div>
+
+      <button
+        onClick={handleAddressChange}
+        className="mt-4 w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
       >
-        <div className="bg-gray-100 p-6 rounded-md shadow-md w-full max-w-md">
-          <h2 className="text-xl font-semibold mb-4 text-center">Isi Alamat</h2>
-          <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            value={formData.alamat.provinsi}
-            onChange={(e) => {
-              setFormData({ ...formData, alamat: { ...formData.alamat, provinsi: e.target.value, kotaKabupaten: '', kecamatan: '', kelurahan: '' } });
-              setKecamatanOptions([]);
-              setKelurahanOptions([]);
-            }}
-          >
-            <option value="">Pilih Provinsi</option>
-            <option value="Sulawesi Utara">Sulawesi Utara</option>
-            <option value="Sulawesi Tengah">Sulawesi Tengah</option>
-            <option value="Gorontalo">Gorontalo</option>
-          </select>
-          <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            value={formData.alamat.kotaKabupaten}
-            onChange={handleCityChange}
-          >
-            <option value="">Pilih Kota/Kabupaten</option>
-            {Object.keys(citiesByProvince[formData.alamat.provinsi] || {}).map((city) => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-          <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            value={formData.alamat.kecamatan}
-            onChange={handleKecamatanChange}
-          >
-            <option value="">Pilih Kecamatan</option>
-            {kecamatanOptions.map((kecamatan) => (
-              <option key={kecamatan} value={kecamatan}>{kecamatan}</option>
-            ))}
-          </select>
-          <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            value={formData.alamat.kelurahan}
-            onChange={(e) => setFormData({ ...formData, alamat: { ...formData.alamat, kelurahan: e.target.value } })}
-          >
-            <option value="">Pilih Kelurahan</option>
-            {kelurahanOptions.map((kelurahan) => (
-              <option key={kelurahan} value={kelurahan}>{kelurahan}</option>
-            ))}
-          </select>
-          <input
-            type="text"
-            name="jalan"
-            placeholder="Jalan"
-            value={formData.alamat.jalan}
-            onChange={(e) => setFormData({ ...formData, alamat: { ...formData.alamat, jalan: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-          />
-          <div className="mt-4 flex justify-center space-x-4">
-            <button onClick={() => setIsModalOpen(false)} className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md">Batal</button>
-            <button onClick={handleAddressChange} className="bg-blue-600 text-white py-2 px-4 rounded-md">Simpan Alamat</button>
-          </div>
-        </div>
-      </Modal>
+        Simpan Alamat
+      </button>
+    </div>
+  </div>
+</Modal>
+
+
+
+      </div>
     </div>
   );
 }
