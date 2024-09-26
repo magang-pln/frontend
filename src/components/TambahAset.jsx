@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Untuk link navigasi
 import Sidebar from './SidebarNew';
 import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
 
 Modal.setAppElement('#root');
 
@@ -54,10 +57,23 @@ function TambahAset() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    // Cek jika input berasal dari bagian 'alamat'
+    if (name === 'provinsi' || name === 'kotaKabupaten' || name === 'kecamatan' || name === 'kelurahan' || name === 'jalan') {
+      setFormData({
+        ...formData,
+        alamat: {
+          ...formData.alamat,
+          [name]: value, // Update bagian dari alamat yang sedang diubah
+        },
+      });
+    } else {
+      // Untuk input lainnya, update secara biasa
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleFileChange = (e, field) => {
@@ -228,17 +244,26 @@ function TambahAset() {
               }
             })}
 
-            {/* Input untuk meng-upload file sertifikat */}
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Upload Sertifikat</label>
-              <input type="file" onChange={(e) => handleFileChange(e, 'fileSertifikat')} className="border border-gray-300 rounded-md p-2" />
-            </div>
+{/* Input untuk meng-upload file sertifikat */}
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Upload Sertifikat</label>
+  <input
+    type="file"
+    onChange={(e) => handleFileChange(e, 'fileSertifikat')}
+    className="border border-gray-300 rounded-md p-4 w-full h-12" // Memperbesar padding dan tinggi
+  />
+</div>
 
-            {/* Input untuk meng-upload file kronologis */}
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Upload Kronologis</label>
-              <input type="file" onChange={(e) => handleFileChange(e, 'fileKronologis')} className="border border-gray-300 rounded-md p-2" />
-            </div>
+{/* Input untuk meng-upload file kronologis */}
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Upload Kronologis</label>
+  <input
+    type="file"
+    onChange={(e) => handleFileChange(e, 'fileKronologis')}
+    className="border border-gray-300 rounded-md p-4 w-full h-12" // Memperbesar padding dan tinggi
+  />
+</div>
+
 
             <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
               Simpan Aset
@@ -247,13 +272,21 @@ function TambahAset() {
         </section>
 
         {/* Modal untuk mengisi alamat */}
-<Modal
+        <Modal
   isOpen={isModalOpen}
   onRequestClose={() => setIsModalOpen(false)}
   className="fixed inset-0 flex items-center justify-center z-50" // Menempatkan modal di tengah
   overlayClassName="fixed inset-0 bg-black bg-opacity-50" // Overlay transparan
 >
-  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md"> {/* Mengatur ukuran modal */}
+  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative"> {/* Mengatur ukuran modal dan menambahkan relative positioning */}
+    {/* Tombol X di kanan atas */}
+    <button
+      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+      onClick={() => setIsModalOpen(false)}
+    >
+      X
+    </button>
+
     <h2 className="text-xl font-semibold mb-4">Isi Alamat</h2>
     <div className="space-y-4">
       <div>
@@ -347,6 +380,7 @@ function TambahAset() {
     </div>
   </div>
 </Modal>
+
 
 
       </div>
