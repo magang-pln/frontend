@@ -11,6 +11,8 @@ function Dashboard() {
   const { assetCount } = useContext(AssetContext);
   const mapRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [totalAssets, setTotalAssets] = useState(0);
+  const [asset, setAssets] = useState([]);
 
   const assets = [
     {
@@ -38,6 +40,32 @@ function Dashboard() {
       acquisitionCost: "Rp 600.000.000",
     },
   ];
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await fetch(
+          "https://backend-production-a671.up.railway.app/api/v1/assets/"
+        );
+        const data = await response.json();
+
+        // Log the response to inspect the structure
+        console.log("API Response:", data);
+
+        // Check if the response contains the assets and set the total assets
+        if (data && data.data && data.data.findAssets) {
+          setAssets(data.data.findAssets); // Update here to access findAssets correctly
+          setTotalAssets(data.data.findAssets.length); // Count the assets correctly
+        } else {
+          console.error("Invalid response structure:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching assets:", error);
+      }
+    };
+
+    fetchAssets();
+  }, []);
 
   useEffect(() => {
     if (mapRef.current) return;
@@ -142,7 +170,7 @@ function Dashboard() {
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <div className="p-4 bg-white rounded shadow">
             <h2 className="text-xl">Jumlah Aset</h2>
-            <p className="text-3xl">120</p>
+            <p className="text-3xl">{totalAssets}</p>
           </div>
           <div className="p-4 bg-white rounded shadow">
             <h2 className="text-xl">Aset Dalam Pemeliharaan</h2>
