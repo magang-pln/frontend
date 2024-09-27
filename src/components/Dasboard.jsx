@@ -12,7 +12,7 @@ function Dashboard() {
   const mapRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalAssets, setTotalAssets] = useState(0);
-  const [asset, setAssets] = useState([]);
+  const [staticAssets, setAssets] = useState([]);
 
   const assets = [
     {
@@ -84,34 +84,34 @@ function Dashboard() {
       popupAnchor: [1, -34],
     });
 
-    assets.forEach((asset) => {
+    staticAssets.forEach((asset) => {
       L.marker([asset.lat, asset.lng], { icon: customIcon }).addTo(
         mapRef.current
       ).bindPopup(`
-          <div>
-            <b>${asset.name}</b><br>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <th style="border: 1px solid #ccc; padding: 4px;">Detail</th>
-                <th style="border: 1px solid #ccc; padding: 4px;">Nilai</th>
-              </tr>
-              <tr>
-                <td style="border: 1px solid #ccc; padding: 4px;">Lokasi</td>
-                <td style="border: 1px solid #ccc; padding: 4px;">${asset.location}</td>
-              </tr>
-              <tr>
-                <td style="border: 1px solid #ccc; padding: 4px;">Luas</td>
-                <td style="border: 1px solid #ccc; padding: 4px;">${asset.area}</td>
-              </tr>
-              <tr>
-                <td style="border: 1px solid #ccc; padding: 4px;">Harga Perolehan</td>
-                <td style="border: 1px solid #ccc; padding: 4px;">${asset.acquisitionCost}</td>
-              </tr>
-            </table>
-          </div>
-        `);
+        <div>
+          <b>${asset.name}</b><br>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <th style="border: 1px solid #ccc; padding: 4px;">Detail</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">Nilai</th>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 4px;">Lokasi</td>
+              <td style="border: 1px solid #ccc; padding: 4px;">${asset.location}</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 4px;">Luas</td>
+              <td style="border: 1px solid #ccc; padding: 4px;">${asset.area}</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 4px;">Harga Perolehan</td>
+              <td style="border: 1px solid #ccc; padding: 4px;">${asset.acquisitionCost}</td>
+            </tr>
+          </table>
+        </div>
+      `);
     });
-  }, []);
+  }, [staticAssets]);
 
   const handleSearch = () => {
     const foundAsset = assets.find(
