@@ -43,14 +43,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <Link
-            to="/edit-aset"
-            className={`text-white hover:text-black ${
-              location.pathname === "/edit-aset" ? "text-silver" : ""
-            }`}
-          >
-            Edit Aset
-          </Link>
+          <span className="text-white hover:text-black">Edit Aset</span>
         </li>
       </ul>
     </div>

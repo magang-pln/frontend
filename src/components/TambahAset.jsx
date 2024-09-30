@@ -25,16 +25,15 @@ function TambahAset() {
     penguasaan_tanah: "",
     permasalahan_aset: "",
     kantah_BPN_sertifiksai: "",
-    kronologis: null, // Menyimpan file kronologis
-    sertipikat: null, // Menyimpan file sertifikat
+    kronologis: null,
+    sertipikat: null,
   });
 
-  const navigate = useNavigate(); // Menggunakan useNavigate untuk redirect
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Update formData berdasarkan input
     setFormData({
       ...formData,
       [name]: value,
@@ -44,29 +43,24 @@ function TambahAset() {
   const handleFileChange = (e) => {
     const { name, files } = e.target;
 
-    // Update formData dengan file yang diupload
     setFormData({
       ...formData,
-      [name]: files[0], // Simpan file pertama yang diupload
+      [name]: files[0],
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Data that will be sent
     const dataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
-      // Convert empty string values for numeric fields to null or zero
       const value = formData[key] === "" ? null : formData[key];
       dataToSend.append(key, value);
     });
 
-    // Log data that will be sent
     console.log("Data yang dikirim:", Object.fromEntries(dataToSend));
 
     try {
-      // Send POST request to the API
       const response = await fetch(
         "https://backend-production-a671.up.railway.app/api/v1/assets",
         {
@@ -83,7 +77,6 @@ function TambahAset() {
       const result = await response.json();
       console.log("Aset berhasil ditambahkan:", result);
 
-      // Show success alert
       await Swal.fire({
         title: "Sukses!",
         text: "Aset berhasil ditambahkan!",
@@ -91,7 +84,6 @@ function TambahAset() {
         confirmButtonText: "OK",
       });
 
-      // Redirect to the asset list
       navigate("/daftar-aset");
     } catch (error) {
       console.error("Terjadi kesalahan:", error);
@@ -352,13 +344,14 @@ function TambahAset() {
               <label className="block text-sm font-medium mb-1 text-gray-700">
                 Permasalahan Aset
               </label>
-              <textarea
+              <input
+                type="text"
                 name="permasalahan_aset"
                 value={formData.permasalahan_aset}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Masukkan Permasalahan Aset"
-              ></textarea>
+              ></input>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">

@@ -42,7 +42,25 @@ function EditAset() {
           throw new Error("Error fetching asset data");
         }
         const result = await response.json();
-        setFormData(result.data.findAsset);
+
+        const fetchedData = result.data.findAsset;
+
+        // Memastikan tanggal memiliki format yang benar untuk input type="date"
+        const formattedData = {
+          ...fetchedData,
+          tanggal_berlaku_sertipikat: fetchedData.tanggal_berlaku_sertipikat
+            ? new Date(fetchedData.tanggal_berlaku_sertipikat)
+                .toISOString()
+                .slice(0, 10)
+            : "",
+          tanggal_berakhir_sertipikat: fetchedData.tanggal_berakhir_sertipikat
+            ? new Date(fetchedData.tanggal_berakhir_sertipikat)
+                .toISOString()
+                .slice(0, 10)
+            : "",
+        };
+
+        setFormData(formattedData);
       } catch (error) {
         console.error("Error fetching asset data:", error);
       }
@@ -194,7 +212,7 @@ function EditAset() {
               <div className="flex items-center">
                 <span className="mr-2 text-gray-700">Rp</span>
                 <input
-                  type="number"
+                  type="text"
                   name="harga_perolehan"
                   value={formData.harga_perolehan}
                   onChange={handleChange}
