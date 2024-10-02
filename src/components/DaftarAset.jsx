@@ -183,6 +183,12 @@ function DaftarAset() {
                   Kantah BPN Sertifikasi
                 </th>
                 <th className="border p-2 bg-blue-500 text-white">
+                  koordinat x
+                </th>
+                <th className="border p-2 bg-blue-500 text-white">
+                  koordinat y
+                </th>
+                <th className="border p-2 bg-blue-500 text-white">
                   Kronologis
                 </th>
                 <th className="border p-2 bg-blue-500 text-white">
@@ -219,8 +225,10 @@ function DaftarAset() {
                     <td className="border p-2">{aset.penguasaan_tanah}</td>
                     <td className="border p-2">{aset.permasalahan_aset}</td>
                     <td className="border p-2">
-                      {aset.kantah_BPN_sertifiksai}
+                      {aset.kantah_BPN_sertifikasi}
                     </td>
+                    <td className="border p-2">{aset.kordinat_x}</td>
+                    <td className="border p-2">{aset.kordinat_y}</td>
                     <td className="border p-2 text-center">
                       {aset.kronologis ? (
                         <a

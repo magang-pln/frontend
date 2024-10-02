@@ -24,7 +24,9 @@ function TambahAset() {
     tanggal_berakhir_sertipikat: "",
     penguasaan_tanah: "",
     permasalahan_aset: "",
-    kantah_BPN_sertifiksai: "",
+    kantah_BPN_sertifikasi: "",
+    kordinat_x: "",
+    kordinat_y: "",
     kronologis: null,
     sertipikat: null,
   });
@@ -359,11 +361,37 @@ function TambahAset() {
               </label>
               <input
                 type="text"
-                name="kantah_BPN_sertifiksai"
-                value={formData.kantah_BPN_sertifiksai}
+                name="kantah_BPN_sertifikasi"
+                value={formData.kantah_BPN_sertifikasi}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Masukkan Kantah BPN Sertifikasi"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Koordinat X
+              </label>
+              <input
+                type="text"
+                name="kordinat_x"
+                value={formData.kordinat_x}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Masukkan Koordinat X"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Koordinat Y
+              </label>
+              <input
+                type="text"
+                name="kordinat_y"
+                value={formData.kordinat_y}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Masukkan Koordinat Y"
               />
             </div>
             <div>
