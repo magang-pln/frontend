@@ -230,9 +230,11 @@ function DaftarAset() {
                     <td className="border p-2">{aset.kordinat_x}</td>
                     <td className="border p-2">{aset.kordinat_y}</td>
                     <td className="border p-2 text-center">
-                      {aset.kronologis ? (
+                      {aset.sertipikat ? (
                         <a
-                          href={`https://backend-production-a671.up.railway.app/api/v1/assets/download/${aset.kronologis}`}
+                          href={`https://drive.google.com/file/d/${aset.kronologis}/view`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-500"
                         >
                           <i className="fa fa-file"></i>
@@ -244,7 +246,9 @@ function DaftarAset() {
                     <td className="border p-2 text-center">
                       {aset.sertipikat ? (
                         <a
-                          href={`https://backend-production-a671.up.railway.app/api/v1/assets/download/${aset.sertipikat}`}
+                          href={`https://drive.google.com/file/d/${aset.sertipikat}/view`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-500"
                         >
                           <i className="fa fa-file"></i>
