@@ -9,73 +9,65 @@ import { AssetContext } from "./AssetContext";
 function Dashboard() {
   const navigate = useNavigate();
   const { assetCount } = useContext(AssetContext);
-  const mapRef = useRef(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const mapRef = useRef(null); // Reference for Leaflet map
   const [totalAssets, setTotalAssets] = useState(0);
   const [staticAssets, setAssets] = useState([]);
+  const markerRefs = useRef([]); // Keep track of markers to remove them later
 
-  const assets = [
-    {
-      lat: -1.47483,
-      lng: 124.842079,
-      name: "Aset 1",
-      location: "Lokasi 1",
-      area: "100 m²",
-      acquisitionCost: "Rp 500.000.000",
-    },
-    {
-      lat: -1.5,
-      lng: 124.85,
-      name: "Aset 2",
-      location: "Lokasi 2",
-      area: "200 m²",
-      acquisitionCost: "Rp 750.000.000",
-    },
-    {
-      lat: -1.52,
-      lng: 124.86,
-      name: "Aset 3",
-      location: "Lokasi 3",
-      area: "150 m²",
-      acquisitionCost: "Rp 600.000.000",
-    },
-  ];
+  const fetchAssets = async () => {
+    try {
+      const response = await fetch(
+        `https://backend-production-a671.up.railway.app/api/v1/assets/`
+      );
+      const data = await response.json();
+
+      console.log("API Response:", data);
+
+      if (data && data.data && data.data.findAssets) {
+        const assets = data.data.findAssets.map((asset) => ({
+          lat: asset.kordinat_x,
+          lng: asset.kordinat_y,
+          name: asset.nama_aset,
+          luas: asset.luas,
+          harga_perolehan: asset.harga_perolehan,
+          nilai_saat_ini: asset.nilai_saat_ini,
+          alamat: asset.alamat,
+          kecamatan: asset.kecamatan,
+          kelurahan: asset.kelurahan,
+          kota: asset.kota,
+          provinsi: asset.provinsi,
+          tahun_perolehan: asset.tahun_perolehan,
+        }));
+
+        setAssets(assets);
+        setTotalAssets(assets.length);
+      } else {
+        console.error("Invalid response structure:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching assets:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAssets = async () => {
-      try {
-        const response = await fetch(
-          "https://backend-production-a671.up.railway.app/api/v1/assets/"
-        );
-        const data = await response.json();
-
-        // Log the response to inspect the structure
-        console.log("API Response:", data);
-
-        // Check if the response contains the assets and set the total assets
-        if (data && data.data && data.data.findAssets) {
-          setAssets(data.data.findAssets); // Update here to access findAssets correctly
-          setTotalAssets(data.data.findAssets.length); // Count the assets correctly
-        } else {
-          console.error("Invalid response structure:", data);
-        }
-      } catch (error) {
-        console.error("Error fetching assets:", error);
-      }
-    };
-
     fetchAssets();
   }, []);
 
   useEffect(() => {
-    if (mapRef.current) return;
+    // Initialize map only once
+    if (!mapRef.current) {
+      mapRef.current = L.map("map").setView([1.4748, 124.845], 12);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(mapRef.current);
+    }
 
-    mapRef.current = L.map("map").setView([-1.47483, 124.842079], 10);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(mapRef.current);
+    // Clear existing markers
+    markerRefs.current.forEach((marker) => {
+      mapRef.current.removeLayer(marker);
+    });
+    markerRefs.current = [];
 
     const customIcon = L.icon({
       iconUrl: markerIcon,
@@ -84,45 +76,74 @@ function Dashboard() {
       popupAnchor: [1, -34],
     });
 
+    // Add new markers for each asset
     staticAssets.forEach((asset) => {
-      L.marker([asset.lat, asset.lng], { icon: customIcon }).addTo(
-        mapRef.current
-      ).bindPopup(`
-        <div>
-          <b>${asset.name}</b><br>
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <th style="border: 1px solid #ccc; padding: 4px;">Detail</th>
-              <th style="border: 1px solid #ccc; padding: 4px;">Nilai</th>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 4px;">Lokasi</td>
-              <td style="border: 1px solid #ccc; padding: 4px;">${asset.location}</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 4px;">Luas</td>
-              <td style="border: 1px solid #ccc; padding: 4px;">${asset.area}</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 4px;">Harga Perolehan</td>
-              <td style="border: 1px solid #ccc; padding: 4px;">${asset.acquisitionCost}</td>
-            </tr>
-          </table>
-        </div>
-      `);
+      if (asset.lat && asset.lng) {
+        const latitude = parseFloat(asset.lat.toString().replace(",", "."));
+        const longitude = parseFloat(asset.lng.toString().replace(",", "."));
+
+        const fullAddress = `
+        ${asset.alamat}, 
+        ${asset.kelurahan}, 
+        ${asset.kecamatan}, 
+        ${asset.kota}, 
+        ${asset.provinsi}`;
+
+        const formattedHargaPerolehan = asset.harga_perolehan
+          ? Number(asset.harga_perolehan).toLocaleString("id-ID")
+          : "-";
+
+        const formattedNilaiSaatIni = asset.nilai_saat_ini
+          ? Number(asset.nilai_saat_ini).toLocaleString("id-ID")
+          : "-";
+
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+          const marker = L.marker([latitude, longitude], {
+            icon: customIcon,
+          }).addTo(mapRef.current).bindPopup(`
+              <div>
+                <b>${asset.name}</b><br>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <th style="border: 1px solid #ccc; padding: 4px;">Detail</th>
+                    <th style="border: 1px solid #ccc; padding: 4px;">Nilai</th>
+                  </tr>
+                  <tr>
+                  <tr>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Tahun Perolehan</td>
+                    <td style="border: 1px solid #ccc; padding: 4px;">${asset.tahun_perolehan}</td>
+                  </tr>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Luas</td>
+                    <td style="border: 1px solid #ccc; padding: 4px;">${asset.luas} m2</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Harga Perolehan</td>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Rp.${formattedHargaPerolehan}</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Nilai Saat Ini</td>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Rp.${formattedNilaiSaatIni}</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #ccc; padding: 4px;">Alamat</td>
+                    <td style="border: 1px solid #ccc; padding: 4px;">${fullAddress}</td>
+                  </tr>
+                </table>
+              </div>
+            `);
+
+          // Store reference to marker for future removal
+          markerRefs.current.push(marker);
+        } else {
+          console.warn(
+            `Invalid coordinates for asset ${asset.name}: ${latitude}, ${longitude}`
+          );
+        }
+      } else {
+        console.warn(`Asset ${asset.name} does not have valid coordinates`);
+      }
     });
   }, [staticAssets]);
-
-  const handleSearch = () => {
-    const foundAsset = assets.find(
-      (asset) => asset.name.toLowerCase() === searchTerm.toLowerCase()
-    );
-    if (foundAsset && mapRef.current) {
-      mapRef.current.setView([foundAsset.lat, foundAsset.lng], 15);
-    } else {
-      alert("Aset tidak ditemukan!");
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -148,23 +169,6 @@ function Dashboard() {
             </button>
           </div>
         </header>
-
-        {/* Input Pencarian Aset */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Cari Aset..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white py-2 px-4 rounded mt-2"
-          >
-            Cari
-          </button>
-        </div>
 
         {/* Statistics */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
