@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 
 function TambahAset() {
   const [formData, setFormData] = useState({
-    unit_induk: "UID SULUTTENGGO",
+    unit_induk: "",
     nama_aset: "",
     unit: "",
     nomor_SAP: "",

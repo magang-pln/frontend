@@ -42,9 +42,6 @@ const Sidebar = () => {
             Tambah Aset
           </Link>
         </li>
-        <li>
-          <span className="text-white hover:text-black">Edit Aset</span>
-        </li>
       </ul>
     </div>
   );

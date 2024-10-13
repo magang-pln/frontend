@@ -4,6 +4,7 @@ import Sidebar from "./SidebarNew";
 import "font-awesome/css/font-awesome.min.css";
 import Swal from "sweetalert2";
 import { AssetContext } from "./AssetContext";
+import Pagination from "./Pagination";
 
 function DaftarAset() {
   const { setAssetCount } = useContext(AssetContext);
@@ -21,9 +22,9 @@ function DaftarAset() {
         const assets = data.data.findAssets;
         setAsetList(assets);
         const yellowCount = assets.filter(
-          (asset) =>
-            !asset.nomor_sertipikat || asset.nomor_sertipikat.trim() === ""
+          (asset) => asset.permasalahan_aset !== "0. Clean and Clear"
         ).length;
+
         console.log("Yellow Count:", yellowCount);
         setAssetCount(yellowCount);
       })
@@ -130,15 +131,23 @@ function DaftarAset() {
         <section className="bg-white rounded shadow p-4 mb-6">
           <h2 className="text-xl mb-4">Daftar Aset</h2>
           <div className="mb-4 relative">
-            <i className="fa fa-search absolute left-3 top-2 text-gray-400"></i>
+            <i className="fa fa-search absolute left-3 top-3 text-gray-400"></i>
             <input
               type="text"
-              placeholder="Cari Aset (nama atau nomor SAP)..."
+              placeholder="Cari Aset (nama aset atau nomor SAP)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full p-2 pl-10 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Top Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+
           <table className="w-full table-auto">
             <thead>
               <tr>
@@ -203,7 +212,11 @@ function DaftarAset() {
                 currentItems.map((aset) => (
                   <tr
                     key={aset.id}
-                    className={!aset.nomor_sertipikat ? "bg-yellow-300" : ""}
+                    className={
+                      aset.permasalahan_aset !== "0. Clean and Clear"
+                        ? "bg-yellow-300"
+                        : ""
+                    }
                   >
                     <td className="border p-2">{aset.unit_induk}</td>
                     <td className="border p-2">{aset.nama_aset}</td>
@@ -284,32 +297,12 @@ function DaftarAset() {
               )}
             </tbody>
           </table>
-          {/* Pagination Control */}
-          <div className="mt-4 flex justify-center items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`flex items-center p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 ease-in-out ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              <i className="fa fa-chevron-left mr-2"></i> Prev
-            </button>
-            <span className="text-lg">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`flex items-center p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 ease-in-out ${
-                currentPage === totalPages
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              Next <i className="fa fa-chevron-right ml-2"></i>
-            </button>
-          </div>
+          {/* Bottom Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </section>
       </div>
     </div>
